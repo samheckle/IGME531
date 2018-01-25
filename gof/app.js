@@ -14,12 +14,10 @@
     ctx: null,
 
     // CHANGE TO LIMIT FRAMERATE
-    fps: 15,
+    fps: 10,
 
     init() {
       this.fpsInterval = 1000 / this.fps;
-      console.log(this.fps);
-      console.log(this.fpsInterval);
       this.then = Date.now();
       this.startTime = this.then;
       this.canvas = document.getElementsByTagName('canvas')[0]
@@ -68,8 +66,8 @@
           }
           count -= currentGrid[x][y];
           // Rules of Life
-          if ((currentGrid[x][y] == 1) && (count < 2)) nextGrid[x][y] = 0;
-          else if ((currentGrid[x][y] == 1) && (count > 4)) nextGrid[x][y] = 0;
+          if ((currentGrid[x][y] == 1) && (count <= 2)) nextGrid[x][y] = 0;
+          else if ((currentGrid[x][y] == 1) && (count >= 4)) nextGrid[x][y] = 0;
           else if ((currentGrid[x][y] == 0) && (count >= 3)) nextGrid[x][y] = 1;
           else nextGrid[x][y] = currentGrid[x][y];
         }
@@ -93,11 +91,9 @@
       // if enough time has elapsed, draw the next frame
 
       if (this.elapsed > this.fpsInterval) {
-
         // Get ready for next frame by setting then=now, but also adjust for your
         // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
         this.then = this.now - (this.elapsed % this.fpsInterval);
-
         // Put your drawing code here
         this.animate()
 
@@ -108,7 +104,7 @@
 
         let cellWidth = this.canvas.width / gridSize
         let cellHeight = this.canvas.height / gridSize
-
+        var count = 0;
         for (let i = 0; i < gridSize; i++) {
           let row = currentGrid[i]
           let yPos = i * cellHeight
@@ -125,12 +121,16 @@
                 this.ctx.fillStyle = '#4BA3C3'
                 this.ctx.strokeStyle = '#4BA3C3'
               }
-
+              count ++;
               this.ctx.strokeRect(xPos, yPos, cellWidth, cellHeight)
               this.ctx.fillRect(xPos, yPos, cellWidth, cellHeight)
             }
           }
         }
+        if(count > gridSize*gridSize / 2.2){
+          location.reload();
+        }
+      
       }
     }
   }
