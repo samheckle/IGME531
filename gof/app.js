@@ -51,7 +51,9 @@ itself, but in the code.
         for (let j = 0; j < gridSize; j++) {
           if (j == 0 || i == 0 || j == gridSize - 1 || i == gridSize - 1) {
             currentGrid[i][j] = 0;
-          } else if(i == j || gridSize-i == j){
+          } 
+          // CHANGE FROM RANDOMIZED GRID TO A VERY COOL ONE
+          else if(i == j || gridSize-i == j){
             currentGrid[i][j] =1;
           } else{
             currentGrid[i][j] =0;
