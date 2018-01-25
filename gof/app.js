@@ -4,13 +4,14 @@ attribute for overpopulation. I originally had tried to implement taking a scree
 the game and importing that into a gallery page, but I couldn't get it to work without running my own server
 (which is problematic on banjo). So, I messed around with the rules. 
 
-I ended up implementing some of the things mentioned in the wikipedia article, such as high life with 23/34 instead
+I ended up trying some of the things mentioned in the wikipedia article, such as high life with 23/36 instead
 of regular 23/3. 
 
-I tweeked the original starting of the game of life so now it looks pretty dope and it refreshes once finished.
+Ultimately, I tweeked the original starting of the game of life so now it looks pretty dope and it refreshes 
+once finished. I had started with randomization, but I liked having more control about where it could go. After some 
+inspiring youtube videos, I found an interesting starting point and went with it from there.
 
-I also played around with the framerate, and implemented a feature where you can change it. Not within the webpage 
-itself, but in the code. 
+I also played around with the framerate, and implemented a feature where you can change it. 
 */
 
 ! function () {
@@ -19,7 +20,7 @@ itself, but in the code.
   let currentGrid = []
   let nextGrid = []
 
-  let gridSize = 500
+  let gridSize = 400
 
 
   let fpsInterval, startTime, now, then, elapsed;
@@ -27,13 +28,9 @@ itself, but in the code.
   const app = {
     canvas: null,
     ctx: null,
-
-    // CHANGE TO LIMIT FRAMERATE
     fps: 60,
 
     init() {
-      
-      
       this.then = Date.now();
       this.startTime = this.then;
       this.canvas = document.getElementsByTagName('canvas')[0]
@@ -91,7 +88,6 @@ itself, but in the code.
           // Rules of Life
           if ((currentGrid[x][y] == 1) && (count < 2 )) nextGrid[x][y] = 0;
           else if ((currentGrid[x][y] == 1) && (count > 3)) nextGrid[x][y] = 0;
-          //else if ((currentGrid[x][y] == 0) && (count > 4)) nextGrid[x][y] = 0;
           else if ((currentGrid[x][y] == 0) && (count ==3 )) nextGrid[x][y] = 1;
           else if ((count ==4 )) nextGrid[x][y] = 1;
           else nextGrid[x][y] = currentGrid[x][y];
