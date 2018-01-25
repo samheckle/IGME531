@@ -1,10 +1,25 @@
+/*
+For this project I experimented a lot with color and changing the basic rule set to include four as an
+attribute for overpopulation. I originally had tried to implement taking a screenshot of the final version of
+the game and importing that into a gallery page, but I couldn't get it to work without running my own server
+(which is problematic on banjo). So, I messed around with the rules. 
+
+I ended up implementing some of the things mentioned in the wikipedia article, such as high life with 23/34 instead
+of regular 23/3. 
+
+I tweeked the original starting of the game of life so now it looks pretty dope and it refreshes once finished.
+
+I also played around with the framerate, and implemented a feature where you can change it. Not within the webpage 
+itself, but in the code. 
+*/
+
 ! function () {
   'use strict'
 
   let currentGrid = []
   let nextGrid = []
 
-  let gridSize = 100
+  let gridSize = 500
 
 
   let fpsInterval, startTime, now, then, elapsed;
@@ -14,10 +29,11 @@
     ctx: null,
 
     // CHANGE TO LIMIT FRAMERATE
-    fps: 10,
+    fps: 60,
 
     init() {
-      this.fpsInterval = 1000 / this.fps;
+      
+      
       this.then = Date.now();
       this.startTime = this.then;
       this.canvas = document.getElementsByTagName('canvas')[0]
@@ -35,8 +51,13 @@
         for (let j = 0; j < gridSize; j++) {
           if (j == 0 || i == 0 || j == gridSize - 1 || i == gridSize - 1) {
             currentGrid[i][j] = 0;
-          } else
-            currentGrid[i][j] = Math.random() > .8 ? 1 : 0
+          } else if(i == j || gridSize-i == j){
+            currentGrid[i][j] =1;
+          } else{
+            currentGrid[i][j] =0;
+          }
+          // else
+          //   currentGrid[i][j] = Math.random() > .8 ? 1 : 0
           nextGrid[i][j] = 0
         }
       }
@@ -66,9 +87,11 @@
           }
           count -= currentGrid[x][y];
           // Rules of Life
-          if ((currentGrid[x][y] == 1) && (count <= 2)) nextGrid[x][y] = 0;
-          else if ((currentGrid[x][y] == 1) && (count >= 4)) nextGrid[x][y] = 0;
-          else if ((currentGrid[x][y] == 0) && (count >= 3)) nextGrid[x][y] = 1;
+          if ((currentGrid[x][y] == 1) && (count < 2 )) nextGrid[x][y] = 0;
+          else if ((currentGrid[x][y] == 1) && (count > 3)) nextGrid[x][y] = 0;
+          //else if ((currentGrid[x][y] == 0) && (count > 4)) nextGrid[x][y] = 0;
+          else if ((currentGrid[x][y] == 0) && (count ==3 )) nextGrid[x][y] = 1;
+          else if ((count ==4 )) nextGrid[x][y] = 1;
           else nextGrid[x][y] = currentGrid[x][y];
         }
       }
@@ -80,6 +103,8 @@
     },
 
     draw() {
+      this.fps = document.getElementById("slider").value;
+      this.fpsInterval = 1000 / this.fps;
       requestAnimationFrame(this.draw)
 
       this.now = Date.now();
@@ -121,16 +146,15 @@
                 this.ctx.fillStyle = '#4BA3C3'
                 this.ctx.strokeStyle = '#4BA3C3'
               }
-              count ++;
+              count++;
               this.ctx.strokeRect(xPos, yPos, cellWidth, cellHeight)
               this.ctx.fillRect(xPos, yPos, cellWidth, cellHeight)
             }
           }
         }
-        if(count > gridSize*gridSize / 2.2){
+        if (count > gridSize * gridSize / 5) {
           location.reload();
         }
-      
       }
     }
   }
