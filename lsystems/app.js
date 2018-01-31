@@ -7,7 +7,7 @@ const axiom = 'F'
 
 let output = axiom
 
-let numGenerations = 4
+let numGenerations = 5
 
 let deg = 22.5;
 let rad = deg * Math.PI / 180
