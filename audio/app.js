@@ -62,7 +62,7 @@ I also played around with the framerate, and implemented a feature where you can
       }
 
       // audio 
-      scale = Tonal.Scale.notes('c4', 'minor')
+      scale = Tonal.Scale.notes('c3', 'dorian')
       this.aud = new AudioContext();
     },
 
@@ -129,6 +129,7 @@ I also played around with the framerate, and implemented a feature where you can
       var count = 0;
       const osc = this.aud.createOscillator();
       const mod = this.aud.createOscillator();
+      const gain = this.aud.createGain()
       for (let i = 0; i < gridSize; i++) {
         let row = currentGrid[i]
         let yPos = i * cellHeight
@@ -142,14 +143,15 @@ I also played around with the framerate, and implemented a feature where you can
             if (currentGrid[i][j] == nextGrid[i][j]) {
               this.ctx.fillStyle = '#175676'
               this.ctx.strokeStyle = '#175676'
-              osc.type = 'sawtooth'
-              osc.frequency.value = 220 * j / xPos
-
+              osc.type = 'triangle'
+              osc.frequency.value = Tonal.freq(scale[index])
+              gain.gain.value = .5
             } else {
               this.ctx.fillStyle = '#4BA3C3'
               this.ctx.strokeStyle = '#4BA3C3'
               mod.type = 'sine'
-              mod.frequency.value = 4
+              mod.frequency.value = Tonal.freq(scale[Math.floor(xPos / window.innerHeight * scale.length)])
+              
             }
             count++;
             this.ctx.strokeRect(xPos, yPos, cellWidth, cellHeight)
@@ -159,13 +161,14 @@ I also played around with the framerate, and implemented a feature where you can
         }
 
       }
-      const gain = this.aud.createGain()
-      gain.gain.value = 10
+
       mod.start()
       osc.start()
       mod.connect(gain)
       gain.connect(osc.frequency)
       osc.connect(this.aud.destination)
+
+
       if (count > gridSize * gridSize / 5) {
         location.reload();
       }
