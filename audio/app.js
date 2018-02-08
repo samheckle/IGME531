@@ -62,7 +62,7 @@ I also played around with the framerate, and implemented a feature where you can
       }
 
       // audio 
-      scale = Tonal.Scale.notes('c3', 'dorian')
+      scale = Tonal.Scale.notes('e3', 'dorian')
       this.aud = new AudioContext();
     },
 
@@ -127,9 +127,13 @@ I also played around with the framerate, and implemented a feature where you can
       let cellWidth = this.canvas.width / gridSize
       let cellHeight = this.canvas.height / gridSize
       var count = 0;
+
+      // audio
       const osc = this.aud.createOscillator();
       const mod = this.aud.createOscillator();
-      const gain = this.aud.createGain()
+      var gain = this.aud.createGain()
+      var delay = this.aud.createDelay();
+
       for (let i = 0; i < gridSize; i++) {
         let row = currentGrid[i]
         let yPos = i * cellHeight
@@ -137,20 +141,24 @@ I also played around with the framerate, and implemented a feature where you can
         const freq = Tonal.freq(scale[index])
         for (let j = 0; j < gridSize; j++) {
           let cell = row[j]
-
           if (cell === 1) {
             let xPos = j * cellWidth
             if (currentGrid[i][j] == nextGrid[i][j]) {
               this.ctx.fillStyle = '#175676'
               this.ctx.strokeStyle = '#175676'
+
+              // audio for alive cells
               osc.type = 'triangle'
               osc.frequency.value = Tonal.freq(scale[index])
-              gain.gain.value = .5
+              //gain.gain.value = 100
             } else {
               this.ctx.fillStyle = '#4BA3C3'
               this.ctx.strokeStyle = '#4BA3C3'
-              mod.type = 'sine'
+
+              // audio for dead cells
+              mod.type = 'triangle'
               mod.frequency.value = Tonal.freq(scale[Math.floor(xPos / window.innerHeight * scale.length)])
+              
               
             }
             count++;
@@ -161,16 +169,22 @@ I also played around with the framerate, and implemented a feature where you can
         }
 
       }
+      delay.delayTime.value = 0
 
       mod.start()
       osc.start()
-      mod.connect(gain)
+      mod.connect(delay)
+      delay.connect(gain)
       gain.connect(osc.frequency)
       osc.connect(this.aud.destination)
-
+      delay.connect(this.aud.destination)
+      osc.stop(this.aud.currentTime+.02);
+      mod.stop(this.aud.currentTime+.04);
 
       if (count > gridSize * gridSize / 5) {
-        location.reload();
+        osc.type = 'sine'
+        delay.delayTime.value = 1
+        mod.frequency.value = 0
       }
     }
   }
