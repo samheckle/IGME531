@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang='en'>
+
+<head>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%
+    }
+  </style>
+
+</head>
+
+<body>
+  <canvas></canvas>
+</body>
+
+<script>
+  // Karl Sims RD tutorial: http://www.karlsims.com/rd.html
+  // Video tutorial using p5.js (don't use p5.js!)
+  // https://www.youtube.com/watch?v=BV9ny785UNc
+
+  // calculating large grids can get expensive very quickly
+  // experiment with different values to see how high you can go
+  var width = 400,
+    height = 400
+
+  let canvas, ctx, grid, tmp
+
+  const dA = 1;
+  const dB = 0.5;
+  const feed = 0.055;
+  const k = 0.062;
+
+  // setup after canvas is instantiated
+  window.onload = function () {
+
+    canvas = document.querySelector('canvas')
+    ctx = canvas.getContext('2d')
+    canvas.width = this.width = window.innerWidth
+    canvas.height = this.height = window.innerHeight
+
+    grid = []
+    tmp = []
+    for (let x = 0; x < width; x++) {
+      grid[x] = []
+      tmp[x] = [];
+      for (let y = 0; y < height; y++) {
+        grid[x][y] = {
+          a: 1,
+          b: 0
+        }
+        tmp[x][y] = {
+          a: 1,
+          b: 0
+        }
+      }
+    }
+    for (var i = width/2; i < width/2 + 10; i++) {
+    for (var j = height/2; j < height/2 +10; j++) {
+      grid[i][j].b = 1;
+    }
+  }
+    
+    requestAnimationFrame(draw)
+  }
+
+  const draw = function () {
+    requestAnimationFrame(draw)
+
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, width, height)
+
+    // get a reference to all the pixels stored in our canvas
+    // so that we can write them to the screen all at once instead
+    // of using hundreds of calls to fillRect(), which would be
+    // expensive!
+    let imgd = ctx.getImageData(0, 0, width, height),
+      pixels = imgd.data
+
+    // run simulation here...
+    for (let x = 1; x < width-1; x++) {
+      for (let y = 1; y < height-1; y++) {
+        let a = grid[x][y].a;
+        let b = grid[x][y].b;
+        tmp[x][y].a = a + (dA * laplaceA(x, y)) - (a * b * b) + (feed * (1 - a));
+        tmp[x][y].b = b + (dB * laplaceB(x, y)) + (a * b * b) - ((k + feed) * b);
+      }
+    }
+    // ... and then draw
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        let pixelIndex = (y * width * 4) + (x * 4)
+        var a = tmp[x][y].a;
+        var b = tmp[x][y].b;
+        // create a value based on some combination of a and b
+        // for this particular cell... NOTE THAT THIS WILL THROW
+        // AN ERROR UNTIL YOU FILL IN THE VALUE
+        let amount = Math.floor((a - b) * 255) // XXXXXX
+
+          pixels[pixelIndex] = amount
+        pixels[pixelIndex + 1] = amount
+        pixels[pixelIndex + 2] = amount
+        pixels[pixelIndex + 3] = 255
+      }
+    }
+
+    ctx.putImageData(imgd, 0, 0)
+
+    let swap = grid
+    grid = tmp
+    tmp = swap
+  }
+
+  let laplaceA = function (x, y) {
+    var sumA = 0;
+    sumA += grid[x][y].a * -1;
+    sumA += grid[x - 1][y].a * 0.2;
+    sumA += grid[x + 1][y].a * 0.2;
+    sumA += grid[x][y + 1].a * 0.2;
+    sumA += grid[x][y - 1].a * 0.2;
+    sumA += grid[x - 1][y - 1].a * 0.05;
+    sumA += grid[x + 1][y - 1].a * 0.05;
+    sumA += grid[x + 1][y + 1].a * 0.05;
+    sumA += grid[x - 1][y + 1].a * 0.05;
+    return sumA;
+  }
+
+  let laplaceB = function (x, y) {
+    var sumB = 0;
+    sumB += grid[x][y].b * -1;
+    sumB += grid[x - 1][y].b * 0.2;
+    sumB += grid[x + 1][y].b * 0.2;
+    sumB += grid[x][y + 1].b * 0.2;
+    sumB += grid[x][y - 1].b * 0.2;
+    sumB += grid[x - 1][y - 1].b * 0.05;
+    sumB += grid[x + 1][y - 1].b * 0.05;
+    sumB += grid[x + 1][y + 1].b * 0.05;
+    sumB += grid[x - 1][y + 1].b * 0.05;
+    return sumB;
+  }
+</script>
+
+</html>
