@@ -112,6 +112,9 @@
                 this.k = .062;
                 this.dA = 1.0;
                 this.dB = 0.5;
+                this.reset = function(){
+                    location.reload();
+                }
             };
 
             var guiProp = new ReactionGUI();
@@ -120,6 +123,7 @@
             gui.add(guiProp, 'k', 0, .1);
             gui.add(guiProp, 'dA', 0, 1.0);
             gui.add(guiProp, 'dB', 0, 1.0);
+            gui.add(guiProp, 'reset');
 
 
             let stateSize = Math.pow(2, Math.floor(Math.log(canvas.width)/ Math.log(2)))
