@@ -42,44 +42,70 @@ window.app = {
 
     // this.scene.add(this.line)
 
-    this.createLorenz()
-    
+    //this.createLorenz()
+
+
+    // let x0, y0, z0, x1, y1, z1;
+    this.i = 0;
+    this.h = .01
+    this.a = 10.0
+    this.b = 28.0
+    this.c = 8.0 / 3.0
+    this.x0 = .1
+    this.y0 = 0
+    this.z0 = 0
+
     this.render()
 
   },
 
-  createLorenz(){
+  createLorenz() {
 
     let geo = new THREE.Geometry();
 
-    let x0, y0, z0, x1, y1, z1;
-    let h = .01
-    let a = 10.0
-    let b = 28.0
-    let c = 8.0 / 3.0
-
-    x0 = .1
-    y0 = 0
-    z0 = 0
-    for (let i = 0; i < 10000; i++) {
-      x1 = x0 + h * a * (y0 - x0)
-      y1 = y0 + h * (x0 * (b - z0) - y0)
-      z1 = z0 + h * (x0 * y0 - c * z0)
-      if (i > 100) {
-        geo.vertices.push(new THREE.Vector3(x0,y0,z0))
-      }
-      x0 = x1
-      y0 = y1
-      z0 = z1
+    this.x1 = this.x0 + this.h * this.a * (this.y0 - this.x0)
+    this.y1 = this.y0 + this.h * (this.x0 * (this.b - this.z0) - this.y0)
+    this.z1 = this.z0 + this.h * (this.x0 * this.y0 - this.c * this.z0)
+    if (this.i > 100) {
+      geo.vertices.push(new THREE.Vector3(this.x0, this.y0, this.z0))
+      geo.vertices.push(new THREE.Vector3(this.x1, this.y1, this.z1))
     }
+    this.i++;
 
+    this.x0 = this.x1;
+    this.y0 = this.y1;
+    this.z0 = this.z1;
     const mat = new THREE.LineBasicMaterial({
       color: 0xffff00
     })
-
     this.line = new THREE.Line(geo, mat);
 
     this.scene.add(this.line)
+
+    // let geo = new THREE.Geometry();
+
+    // let x0, y0, z0, x1, y1, z1;
+    // let h = .01
+    // let a = 10.0
+    // let b = 28.0
+    // let c = 8.0 / 3.0
+
+    // x0 = .1
+    // y0 = 0
+    // z0 = 0
+    // for (let i = 0; i < 10000; i++) {
+    //   x1 = x0 + h * a * (y0 - x0)
+    //   y1 = y0 + h * (x0 * (b - z0) - y0)
+    //   z1 = z0 + h * (x0 * y0 - c * z0)
+    //   if (i > 100) {
+    //     geo.vertices.push(new THREE.Vector3(x0,y0,z0))
+    //   }
+    //   x0 = x1
+    //   y0 = y1
+    //   z0 = z1
+    // }
+
+
   },
 
   createRenderer() {
@@ -104,7 +130,7 @@ window.app = {
   render() {
     window.requestAnimationFrame(this.render)
 
-    //this.createLorenz();
+    this.createLorenz();
 
     //this.sphere.rotation.y += .005
     //this.sphere.rotation.x += .005
