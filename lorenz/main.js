@@ -17,8 +17,7 @@ window.app = {
     this.createRenderer()
     this.createLights()
 
-
-    // let x0, y0, z0, x1, y1, z1;
+    // initial values for lorenz 
     this.i = 0;
     this.h = .01
     this.a = 10.0
@@ -27,12 +26,17 @@ window.app = {
     this.x0 = .1
     this.y0 = 0
     this.z0 = 0
+
+    // set up gui
     var lorenzGui = function () {
       this.text = "WASD for Camera"
+
       this.preset1 = function () {
+        // remove all objects to reset scene
         for (var i = app.scene.children.length - 1; i >= 0; i--) {
           app.scene.remove(app.scene.children[i])
         }
+        // set new values for lorenz
         app.i = 0
         app.h = .008
         app.x0 = .001
@@ -41,9 +45,11 @@ window.app = {
       }
 
       this.preset2 = function () {
+        // remove all objects to reset scene
         for (var i = app.scene.children.length - 1; i >= 0; i--) {
           app.scene.remove(app.scene.children[i])
         }
+        // set new values for lorenz
         app.i =0
         app.h = .01
         app.x0 = .1
@@ -51,10 +57,12 @@ window.app = {
         app.z0 = 0
       }
 
+      // add fog to scene
       this.foggy = function () {
         app.scene.fog = new THREE.Fog(0x000000, 0.015, 70);
       }
 
+      // refresh scene
       this.reset = function () {
         location.reload();
       }
@@ -74,27 +82,42 @@ window.app = {
 
   createLorenz() {
 
+    // create line geometry, holds vertices of line obj
     let geo = new THREE.Geometry();
 
+    // lorenz algorithm 
     this.x1 = this.x0 + this.h * this.a * (this.y0 - this.x0)
     this.y1 = this.y0 + this.h * (this.x0 * (this.b - this.z0) - this.y0)
     this.z1 = this.z0 + this.h * (this.x0 * this.y0 - this.c * this.z0)
+
+    // if i > 100, add new vertices to geometry 
+    // adds both current and next values
     if (this.i > 100) {
       geo.vertices.push(new THREE.Vector3(this.x0, this.y0, this.z0))
       geo.vertices.push(new THREE.Vector3(this.x1, this.y1, this.z1))
     }
+
+    // increment i for the loop
     this.i++;
+
+    // create material for line object
     this.mat = new THREE.LineBasicMaterial({
       color: 0xff00ff
     })
+
+    // update color for line object
     this.col = new THREE.Color(Math.abs(this.y1) / 10.0, .5, Math.abs(this.x1) / 10.0);
     this.mat.color = this.col;
+
+    // update current values to next values
     this.x0 = this.x1;
     this.y0 = this.y1;
     this.z0 = this.z1;
 
+    // create new line using geometry vertices and material
     this.line = new THREE.Line(geo, this.mat);
 
+    // add line to the scene
     this.scene.add(this.line)
   },
 
@@ -115,8 +138,6 @@ window.app = {
     this.pointLight = new THREE.PointLight(0xffffff)
     this.pointLight.position.z = 50
     this.scene.add(this.pointLight)
-
-
   },
 
   render() {
@@ -124,6 +145,7 @@ window.app = {
 
     this.createLorenz();
 
+    // key press handler
     window.addEventListener("keydown", function (event) {
       if (event.keyCode == 87) {
         app.camera.position.z -= .005;
