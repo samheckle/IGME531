@@ -8,7 +8,7 @@ window.app = {
       75, // FOV 
       window.innerWidth / window.innerHeight, // aspect ratio
       .1, // near plane
-      1000 // far plane
+      10000 // far plane
     )
 
     // move camera back
@@ -16,33 +16,6 @@ window.app = {
 
     this.createRenderer()
     this.createLights()
-
-    // const box = new THREE.BoxGeometry(1, 1, 1)
-    // const material = new THREE.MeshPhongMaterial({
-    //   color: 0xffffff
-    // })
-    // this.cube = new THREE.Mesh(box, material)
-
-    // this.scene.add(this.cube)
-
-    // const geo = new THREE.SphereGeometry(1, 5, 5)
-    // const mat = new THREE.MeshBasicMaterial({
-    //   color: 0xffffff
-    // })
-    // this.sphere = new THREE.Mesh(geo, mat)
-
-    // this.scene.add(this.sphere)
-
-    // const geo = new THREE.Geometry()
-    // geo.vertices.push( new THREE.Vector3(-10,0,0), new THREE.Vector3(0,10,0), new THREE.Vector3(10,0,0))
-    // const mat = new THREE.LineBasicMaterial({
-    //   color: 0xffffff
-    // })
-    // this.line = new THREE.Line(geo, mat)
-
-    // this.scene.add(this.line)
-
-    //this.createLorenz()
 
 
     // let x0, y0, z0, x1, y1, z1;
@@ -54,6 +27,46 @@ window.app = {
     this.x0 = .1
     this.y0 = 0
     this.z0 = 0
+    var lorenzGui = function () {
+      this.text = "WASD for Camera"
+      this.preset1 = function () {
+        for (var i = app.scene.children.length - 1; i >= 0; i--) {
+          app.scene.remove(app.scene.children[i])
+        }
+        app.i = 0
+        app.h = .008
+        app.x0 = .001
+        app.y0 = .001
+        app.z0 = .001
+      }
+
+      this.preset2 = function () {
+        for (var i = app.scene.children.length - 1; i >= 0; i--) {
+          app.scene.remove(app.scene.children[i])
+        }
+        app.i =0
+        app.h = .01
+        app.x0 = .1
+        app.y0 = 0
+        app.z0 = 0
+      }
+
+      this.foggy = function () {
+        app.scene.fog = new THREE.Fog(0x000000, 0.015, 70);
+      }
+
+      this.reset = function () {
+        location.reload();
+      }
+    };
+
+    this.guiProp = new lorenzGui();
+    var gui = new dat.GUI();
+    gui.add(this.guiProp, 'text');
+    gui.add(this.guiProp, 'preset1');
+    gui.add(this.guiProp, 'preset2');
+    gui.add(this.guiProp, 'foggy');
+    gui.add(this.guiProp, 'reset');
 
     this.render()
 
@@ -71,41 +84,18 @@ window.app = {
       geo.vertices.push(new THREE.Vector3(this.x1, this.y1, this.z1))
     }
     this.i++;
-
+    this.mat = new THREE.LineBasicMaterial({
+      color: 0xff00ff
+    })
+    this.col = new THREE.Color(Math.abs(this.y1) / 10.0, .5, Math.abs(this.x1) / 10.0);
+    this.mat.color = this.col;
     this.x0 = this.x1;
     this.y0 = this.y1;
     this.z0 = this.z1;
-    const mat = new THREE.LineBasicMaterial({
-      color: 0xffff00
-    })
-    this.line = new THREE.Line(geo, mat);
+
+    this.line = new THREE.Line(geo, this.mat);
 
     this.scene.add(this.line)
-
-    // let geo = new THREE.Geometry();
-
-    // let x0, y0, z0, x1, y1, z1;
-    // let h = .01
-    // let a = 10.0
-    // let b = 28.0
-    // let c = 8.0 / 3.0
-
-    // x0 = .1
-    // y0 = 0
-    // z0 = 0
-    // for (let i = 0; i < 10000; i++) {
-    //   x1 = x0 + h * a * (y0 - x0)
-    //   y1 = y0 + h * (x0 * (b - z0) - y0)
-    //   z1 = z0 + h * (x0 * y0 - c * z0)
-    //   if (i > 100) {
-    //     geo.vertices.push(new THREE.Vector3(x0,y0,z0))
-    //   }
-    //   x0 = x1
-    //   y0 = y1
-    //   z0 = z1
-    // }
-
-
   },
 
   createRenderer() {
@@ -119,18 +109,33 @@ window.app = {
   },
 
   createLights() {
-    //this.ambient = new THREE.AmbientLight( 0x404040, .15 )
-    //this.scene.add( this.ambient )
+    // this.ambient = new THREE.AmbientLight(0x404040, .15)
+    // this.scene.add(this.ambient)
 
-    this.pointLight = new THREE.PointLight(0x990000)
+    this.pointLight = new THREE.PointLight(0xffffff)
     this.pointLight.position.z = 50
     this.scene.add(this.pointLight)
+
+
   },
 
   render() {
     window.requestAnimationFrame(this.render)
 
     this.createLorenz();
+
+    window.addEventListener("keydown", function (event) {
+      if (event.keyCode == 87) {
+        app.camera.position.z -= .005;
+      } else if (event.keyCode == 83) {
+        app.camera.position.z += .005;
+      } else if (event.keyCode == 65) {
+        app.camera.position.x -= .001;
+      } else if (event.keyCode == 68) {
+        app.camera.position.x += .001;
+      }
+    })
+
 
     //this.sphere.rotation.y += .005
     //this.sphere.rotation.x += .005
