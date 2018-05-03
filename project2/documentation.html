@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title> Project 2 Docs </title>
+    <style>
+        body {
+            margin: auto;
+            width: 60%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Project 1 Documentation</h1>
+    <a href="./index.html">Project 1</a>
+    <h3>Scope</h3>
+    <p>When I read the space colonization algorithm
+        <a href="algorithmicbotany.org/papers/colonization.egwnp2007.pdf">(downloadable pdf)</a>
+        I was pretty inspired to create something similar in three.js. I wanted to experiment more with three.js, because I didn't
+        end up using it in my first project. I also implmented the OrbitControls.js, something we didn't do (at least I think
+        we didnt), and I tried doing a skybox, which was kind of fun to do.
+    </p>
+    <p>I originally wanted to create something that would cycle through a bunch of different scenes, but that did not end up
+        panning out because I implemented the skybox and animations instead.</p>
+    <h3>Problems</h3>
+    <p>I easily spent the most time on the algorithm itself. It was pretty difficult because I ran into a lot of issues trying
+        to place the objects -- I was ultimately passing in a Vector 3 into a function that only accepted three seperate
+        float values. I also continiously run into a problem where objects might be slightly too far from their parent branch.
+        </p>
+    <p>I chose to show the original canopy of generated leaves first because it is easier to visualize how the tree is creating
+        each part.
+    </p>
+    <h3>User Interaction</h3>
+    <p>The user can move around the screen and look at the /poorly/ seamed together skybox. They can also toggle the original
+        canopy of leaves on and off. </p>
+</body>
+
+</html>
